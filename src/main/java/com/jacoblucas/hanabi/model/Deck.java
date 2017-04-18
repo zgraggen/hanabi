@@ -1,5 +1,6 @@
 package com.jacoblucas.hanabi.model;
 
+import com.jacoblucas.hanabi.player.Player;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -46,5 +47,14 @@ public class Deck {
     // Returns the number of cards remaining in the deck.
     public int size() {
         return cards.size();
+    }
+
+    // Deals the top card of the deck to the indicated player, and returns the dealt card.
+    public Card deal(Player player) {
+        Card card = cards.poll();
+        if (card != null) {
+            player.deal(card);
+        }
+        return card;
     }
 }

@@ -1,5 +1,6 @@
 package com.jacoblucas.hanabi.model;
 
+import com.jacoblucas.hanabi.player.Player;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -8,13 +9,16 @@ import java.util.Queue;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 
 public class DeckTest {
     @Test
     public void NewDeckCreatesCorrectNumberOfCards() {
         Deck d = new Deck();
-        assertThat(d.size(), is(Suit.values().length * 5));
+        assertThat(d.size(), is(Suit.values().length * 10));
     }
 
     @Test
@@ -68,5 +72,35 @@ public class DeckTest {
             assertThat(numberCount.get(4), is(2));
             assertThat(numberCount.get(5), is(1));
         }
+    }
+
+    @Test
+    public void DealGivesCardToPlayer() {
+        Player player = new Player();
+        assertThat(player.getHand(), empty());
+
+        Deck deck = new Deck();
+        Card card = deck.deal(player);
+
+        assertThat(player.getHand(), contains(card));
+    }
+
+    @Test
+    public void DealDoesNothingForEmptyDeck() {
+        Player player = new Player();
+        assertThat(player.getHand(), empty());
+
+        Deck deck = new Deck();
+        deck.deal(player);
+        assertThat(player.getHand().size(), is(1));
+
+        // empty the deck
+        while (!deck.getCards().isEmpty()) {
+            deck.getCards().poll();
+        }
+
+        Card card = deck.deal(player);
+        assertThat(card, nullValue());
+        assertThat(player.getHand().size(), is(1));
     }
 }
