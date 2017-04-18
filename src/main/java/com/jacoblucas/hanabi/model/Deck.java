@@ -49,6 +49,7 @@ public class Deck {
         return cards.size();
     }
 
+    // TODO: move to Game class
     // Deals the top card of the deck to the indicated player, and returns the dealt card.
     public Card deal(Player player) {
         Card card = cards.poll();
