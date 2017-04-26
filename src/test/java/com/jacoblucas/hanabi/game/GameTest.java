@@ -145,7 +145,7 @@ public class GameTest {
         game.seed();
 
         Player p = game.getPlayers().peek(); // AlwaysDiscardPlayer
-        Action action = game.signalPlayerAction(p);
+        game.signalPlayerAction(p);
         assertThat(p.getHand().size(), is(5));
     }
 
@@ -157,7 +157,7 @@ public class GameTest {
         assertThat(game.getTips().size(), is(NUM_TIPS-1));
 
         Player p = game.getPlayers().peek(); // AlwaysDiscardPlayer
-        Action action = game.signalPlayerAction(p);
+        game.signalPlayerAction(p);
 
         assertThat(game.getTips().size(), is(NUM_TIPS));
     }
