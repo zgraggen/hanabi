@@ -5,6 +5,7 @@ import com.jacoblucas.hanabi.model.Deck;
 import com.jacoblucas.hanabi.model.Fuse;
 import com.jacoblucas.hanabi.model.Suit;
 import com.jacoblucas.hanabi.model.Tip;
+import com.jacoblucas.hanabi.player.Action;
 import com.jacoblucas.hanabi.player.AlwaysDiscardPlayer;
 import com.jacoblucas.hanabi.player.Player;
 import org.junit.After;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
 
+import static com.jacoblucas.hanabi.game.Game.NUM_TIPS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -38,7 +40,7 @@ public class GameTest {
             players.add(new AlwaysDiscardPlayer());
         }
 
-        for (int i=0; i<8; i++) {
+        for (int i = 0; i< NUM_TIPS; i++) {
             tips.add(new Tip());
         }
 
@@ -136,5 +138,27 @@ public class GameTest {
         }
         assertThat(game.gameOver(), is(true));
         assertThat(game.isPlayersHaveWon(), is(false));
+    }
+
+    @Test
+    public void DiscardActionReplenishesPlayerHand() {
+        game.seed();
+
+        Player p = game.getPlayers().peek(); // AlwaysDiscardPlayer
+        Action action = game.signalPlayerAction(p);
+        assertThat(p.getHand().size(), is(5));
+    }
+
+    @Test
+    public void DiscardActionReplenishesTips() {
+        game.seed();
+
+        game.getTips().poll();
+        assertThat(game.getTips().size(), is(NUM_TIPS-1));
+
+        Player p = game.getPlayers().peek(); // AlwaysDiscardPlayer
+        Action action = game.signalPlayerAction(p);
+
+        assertThat(game.getTips().size(), is(NUM_TIPS));
     }
 }

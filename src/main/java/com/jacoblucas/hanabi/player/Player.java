@@ -9,6 +9,9 @@ import java.util.List;
 
 public abstract class Player {
     @Getter
+    protected String name;
+
+    @Getter
     private List<Card> hand = new ArrayList<>();
 
     @Getter
@@ -21,4 +24,8 @@ public abstract class Player {
 
     // Method that all player sub-classes must implement
     public abstract Action takeAction();
+
+    public void removeCardFromHand(Card card) {
+        hand.remove(card);
+    }
 }

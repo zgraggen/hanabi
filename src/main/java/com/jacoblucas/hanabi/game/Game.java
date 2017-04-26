@@ -5,6 +5,7 @@ import com.jacoblucas.hanabi.model.Deck;
 import com.jacoblucas.hanabi.model.Fuse;
 import com.jacoblucas.hanabi.model.Suit;
 import com.jacoblucas.hanabi.model.Tip;
+import com.jacoblucas.hanabi.player.Action;
 import com.jacoblucas.hanabi.player.AlwaysDiscardPlayer;
 import com.jacoblucas.hanabi.player.Player;
 import lombok.AccessLevel;
@@ -12,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
@@ -23,6 +25,8 @@ import java.util.Stack;
 @Getter
 // Game class that controls the game of Hanabi.
 public class Game {
+    protected static int NUM_TIPS = 8;
+
     private Queue<Player> players;
     private Queue<Tip> tips;
     @Setter(AccessLevel.PROTECTED) private Queue<Fuse> fuses;
@@ -37,11 +41,50 @@ public class Game {
                 deck.deal(p);
             }
         }
+        for (Suit s : Suit.values()) {
+            fireworks.put(s, new Stack<>());
+        }
     }
 
     // Runs the main loop of the game
     protected void run() {
-        // TODO
+        while (!gameOver()) {
+            Player player = players.poll();
+            signalPlayerAction(player);
+            players.add(player);
+        }
+    }
+
+    protected Action signalPlayerAction(Player player) {
+        Action action = player.takeAction();
+        switch (action.getActionType()) {
+            case DISCARD:
+                // discard the card
+                player.removeCardFromHand(action.getCard());
+
+                // give a replacement card for the card that was discarded
+                deck.deal(player);
+
+                // replace a tip
+                if (tips.size() < NUM_TIPS) {
+                    tips.add(new Tip());
+                }
+
+                System.out.println("Player " + player.getName() + " discarded a " + action.getCard());
+            case PLAY:
+                // give a replacement card for the card that was played
+                // if played played a 5, add back a tip
+                // TODO
+            case TIP:
+                // Give player some information
+                // TODO
+        }
+
+        if (deck.size() == 0) {
+            player.setTakenLastAction(true);
+        }
+
+        return action;
     }
 
     // Detects game over.
@@ -50,6 +93,7 @@ public class Game {
     // Players lose when one full round has been played after the deck has been emptied if all 5's have not been played successfully.
     public boolean gameOver() {
         if (fuses.isEmpty()) {
+            System.out.println("Game over - all fuses have been played! Players lose!");
             return true;
         }
 
@@ -60,6 +104,7 @@ public class Game {
         }
 
         if (allFivesHaveBeenPlayed) {
+            System.out.println("Game over - all fives have been played! Players win!");
             playersHaveWon = true;
             return true;
         }
@@ -71,6 +116,7 @@ public class Game {
             }
 
             if (allPlayersTakenFinalAction) {
+                System.out.println("Game over - deck is empty! Players lose!");
                 return true;
             }
         }
@@ -82,6 +128,7 @@ public class Game {
         Queue<Player> players = new LinkedList<>();
         Queue<Tip> tips = new LinkedList<>();
         Queue<Fuse> fuses = new LinkedList<>();
+        Map<Suit, Stack<Card>> fireworks = new HashMap<>();
 
         // TODO: read in num players from command line
         int n = 3;
@@ -102,9 +149,12 @@ public class Game {
                 .players(players)
                 .tips(tips)
                 .fuses(fuses)
+                .fireworks(fireworks)
                 .deck(new Deck())
                 .build();
 
         game.seed();
+
+        game.run();
     }
 }
