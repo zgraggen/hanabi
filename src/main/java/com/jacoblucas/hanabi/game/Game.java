@@ -6,7 +6,7 @@ import com.jacoblucas.hanabi.model.Fuse;
 import com.jacoblucas.hanabi.model.Suit;
 import com.jacoblucas.hanabi.model.Tip;
 import com.jacoblucas.hanabi.player.Action;
-import com.jacoblucas.hanabi.player.AlwaysDiscardPlayer;
+import com.jacoblucas.hanabi.player.AlwaysPlayPlayer;
 import com.jacoblucas.hanabi.player.Player;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -39,7 +39,7 @@ public class Game {
     private boolean playersHaveWon = false;
 
     // Deals out the initial cards to the players
-    protected void seed() {
+    void seed() {
         for (int i=0; i<5; i++) {
             for (Player p : players) {
                 Card c = deck.deal();
@@ -62,7 +62,7 @@ public class Game {
         score();
     }
 
-    public int score() {
+    int score() {
         int score = 0;
         for (Suit s : fireworks.keySet()) {
             Stack<Card> cards = fireworks.get(s);
@@ -88,8 +88,9 @@ public class Game {
         return score;
     }
 
-    protected Action signalPlayerAction(Player player) {
+    Action signalPlayerAction(Player player) {
         Action action = player.takeAction(fireworks, getOtherPlayerHands(player));
+
         switch (action.getActionType()) {
             case DISCARD:
                 // discard the card
@@ -105,13 +106,38 @@ public class Game {
                 }
 
                 System.out.println("Player " + player.getName() + " discarded a " + discardedCard);
+                break;
+
             case PLAY:
+                Card playedCard = removeCardFromHand(player, action.getCardIndexInPlayerHand());
+                System.out.println("Player " + player.getName() + " played a " + playedCard);
+
+                if (isCardPlayable(playedCard)) {
+                    // put the card on the table
+                    fireworks.get(playedCard.getSuit()).add(playedCard);
+
+                    // get back a tip if player has played a 5
+                    if (playedCard.getNumber() == 5 && tips.size() < NUM_TIPS) {
+                        System.out.println("Woo hoo! The " + playedCard.getSuit() + " firework has been completed!");
+                        tips.add(new Tip());
+                    }
+
+                } else {
+                    // take off a fuse
+                    fuses.poll();
+                    System.out.println("Player " + player.getName() + " triggered a fuse (" + playedCard + " cannot be played)!");
+                }
+
                 // give a replacement card for the card that was played
-                // if played played a 5, add back a tip
-                // TODO
+                newCard = deck.deal();
+                playerHands.get(player).add(newCard);
+
+                break;
+
             case TIP:
                 // Give player some information
                 // TODO
+                break;
         }
 
         if (deck.size() == 0) {
@@ -120,6 +146,18 @@ public class Game {
         }
 
         return action;
+    }
+
+    // a card is playable if the top card of the firework of it's suit is 1 less than the card number,
+    // or if it's a one and that firework has zero cards
+    boolean isCardPlayable(Card playedCard) {
+        Stack<Card> stk = fireworks.get(playedCard.getSuit());
+
+        if (stk.isEmpty()) {
+            return playedCard.getNumber() == 1;
+        }
+
+        return stk.peek().getNumber() == playedCard.getNumber() - 1;
     }
 
     private Map<Player, List<Card>> getOtherPlayerHands(Player player) {
@@ -133,18 +171,14 @@ public class Game {
     }
 
     private Card removeCardFromHand(Player player, int cardIndexInPlayerHand) {
-        try {
-            return playerHands.get(player).remove(cardIndexInPlayerHand);
-        } catch (Exception e) {
-            return null;
-        }
+        return playerHands.get(player).remove(cardIndexInPlayerHand);
     }
 
     // Detects game over.
     // Players lose when all fuses are gone.
     // Players win if all fives have been played successfully.
     // Players lose when one full round has been played after the deck has been emptied if all 5's have not been played successfully.
-    public boolean gameOver() {
+    boolean gameOver() {
         if (fuses.isEmpty()) {
             System.out.println("Game over - all fuses have been played! Players lose!");
             return true;
@@ -187,7 +221,7 @@ public class Game {
         // TODO: read in num players from command line
         int n = 3;
         for (int i=0; i<n; i++) {
-            AlwaysDiscardPlayer player = new AlwaysDiscardPlayer(UUID.randomUUID().toString());
+            Player player = new AlwaysPlayPlayer(UUID.randomUUID().toString());
             players.add(player);
             playerHands.put(player, new ArrayList<>());
         }

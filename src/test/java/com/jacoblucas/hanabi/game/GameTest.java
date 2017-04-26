@@ -6,6 +6,7 @@ import com.jacoblucas.hanabi.model.Fuse;
 import com.jacoblucas.hanabi.model.Suit;
 import com.jacoblucas.hanabi.model.Tip;
 import com.jacoblucas.hanabi.player.AlwaysDiscardPlayer;
+import com.jacoblucas.hanabi.player.AlwaysPlayPlayer;
 import com.jacoblucas.hanabi.player.Player;
 import org.junit.After;
 import org.junit.Before;
@@ -25,8 +26,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class GameTest {
-    private static int NUM_PLAYERS = 3;
     private Game game;
+    private AlwaysDiscardPlayer p1;
+    private AlwaysDiscardPlayer p2;
+    private AlwaysPlayPlayer p3;
 
     @Before
     public void setUp() {
@@ -39,11 +42,15 @@ public class GameTest {
             fireworks.put(s, new Stack<>());
         }
 
-        for (int i=0; i<NUM_PLAYERS; i++) {
-            AlwaysDiscardPlayer player = new AlwaysDiscardPlayer(UUID.randomUUID().toString());
-            players.add(player);
-            playerHands.put(player, new ArrayList<>());
-        }
+        p1 = new AlwaysDiscardPlayer(UUID.randomUUID().toString());
+        p2 = new AlwaysDiscardPlayer(UUID.randomUUID().toString());
+        p3 = new AlwaysPlayPlayer(UUID.randomUUID().toString());
+        players.add(p1);
+        players.add(p2);
+        players.add(p3);
+        playerHands.put(p1, new ArrayList<>());
+        playerHands.put(p2, new ArrayList<>());
+        playerHands.put(p3, new ArrayList<>());
 
         for (int i = 0; i< NUM_TIPS; i++) {
             tips.add(new Tip());
@@ -62,17 +69,20 @@ public class GameTest {
                 .playerHands(playerHands)
                 .deck(new Deck())
                 .build();
+
+        game.seed();
     }
 
     @After
     public void tearDown() {
         game = null;
+        p1 = null;
+        p2 = null;
+        p3 = null;
     }
 
     @Test
     public void SeedDealsFiveCardsToEachPlayer() {
-        game.seed();
-
         for (List<Card> hand : game.getPlayerHands().values()) {
             assertThat(hand.size(), is(5));
         }
@@ -92,7 +102,6 @@ public class GameTest {
 
     @Test
     public void GameOverWhenDeckIsEmptyAfterOneMoreRound() {
-        game.seed();
         assertThat(game.gameOver(), is(false));
 
         // force fuses to empty
@@ -104,7 +113,6 @@ public class GameTest {
 
     @Test
     public void GameOverWhenAllFivesHaveBeenPlayed() {
-        game.seed();
         assertThat(game.gameOver(), is(false));
 
         // add all cards to fireworks
@@ -122,7 +130,6 @@ public class GameTest {
 
     @Test
     public void GameOverWhenAfterPlayersFinalTurn() {
-        game.seed();
         assertThat(game.gameOver(), is(false));
 
         class TestDeck extends Deck {
@@ -147,31 +154,7 @@ public class GameTest {
     }
 
     @Test
-    public void DiscardActionReplenishesPlayerHand() {
-        game.seed();
-
-        Player p = game.getPlayers().peek(); // AlwaysDiscardPlayer
-        game.signalPlayerAction(p);
-        assertThat(game.getPlayerHands().get(p).size(), is(5));
-    }
-
-    @Test
-    public void DiscardActionReplenishesTips() {
-        game.seed();
-
-        game.getTips().poll();
-        assertThat(game.getTips().size(), is(NUM_TIPS-1));
-
-        Player p = game.getPlayers().peek(); // AlwaysDiscardPlayer
-        game.signalPlayerAction(p);
-
-        assertThat(game.getTips().size(), is(NUM_TIPS));
-    }
-
-    @Test
     public void scoreSumsTheTopCardOfEachFirework() {
-        game.seed();
-
         game.getFireworks().get(Suit.BLUE).add(new Card(1, Suit.BLUE));
         game.getFireworks().get(Suit.BLUE).add(new Card(2, Suit.BLUE));
         game.getFireworks().get(Suit.BLUE).add(new Card(3, Suit.BLUE)); // top card
@@ -192,5 +175,110 @@ public class GameTest {
         game.getFireworks().get(Suit.YELLOW).add(new Card(5, Suit.YELLOW)); // top card
 
         assertThat(game.score(), is(13)); // 3 + 4 + 1 + 0 + 5
+    }
+
+    @Test
+    public void DiscardActionReplenishesPlayerHand() {
+        game.signalPlayerAction(p1); // AlwaysDiscardPlayer
+        assertThat(game.getPlayerHands().get(p1).size(), is(5));
+    }
+
+    @Test
+    public void DiscardActionReplenishesTips() {
+        game.getTips().poll();
+        assertThat(game.getTips().size(), is(NUM_TIPS-1));
+
+        game.signalPlayerAction(p1); // AlwaysDiscardPlayer
+
+        assertThat(game.getTips().size(), is(NUM_TIPS));
+    }
+
+    @Test
+    public void PlayActionReplenishesPlayerHand() {
+        game.signalPlayerAction(p3); // AlwaysPlayPlayer
+        assertThat(game.getPlayerHands().get(p1).size(), is(5));
+    }
+
+    @Test
+    public void PlayActionForAFiveReplenishesATip() {
+        game.getFireworks().get(Suit.GREEN).add(new Card(1, Suit.GREEN));
+        game.getFireworks().get(Suit.GREEN).add(new Card(2, Suit.GREEN));
+        game.getFireworks().get(Suit.GREEN).add(new Card(3, Suit.GREEN));
+        game.getFireworks().get(Suit.GREEN).add(new Card(4, Suit.GREEN));
+
+        game.getTips().poll();
+        game.getPlayerHands().get(p3).remove(0);
+        game.getPlayerHands().get(p3).add(0, new Card(5, Suit.GREEN));
+
+        int numTips = game.getTips().size();
+        game.signalPlayerAction(p3);
+
+        assertThat(game.getTips().size(), is(numTips + 1));
+    }
+
+    @Test
+    public void PlayActionForPlayableCardPlacesCardOnFirework() {
+        game.getFireworks().get(Suit.BLUE).add(new Card(1, Suit.BLUE));
+        game.getFireworks().get(Suit.BLUE).add(new Card(2, Suit.BLUE));
+        game.getFireworks().get(Suit.BLUE).add(new Card(3, Suit.BLUE));
+
+        game.getPlayerHands().get(p3).remove(0);
+        Card card = new Card(4, Suit.BLUE);
+        game.getPlayerHands().get(p3).add(0, card);
+
+        game.signalPlayerAction(p3);
+
+        assertThat(game.getFireworks().get(Suit.BLUE).size(), is(4));
+        assertThat(game.getFireworks().get(Suit.BLUE).peek(), is(card));
+    }
+
+    @Test
+    public void PlayActionForUnplayableCardTriggersFuse() {
+        game.getFireworks().get(Suit.BLUE).add(new Card(1, Suit.BLUE));
+        game.getFireworks().get(Suit.BLUE).add(new Card(2, Suit.BLUE));
+        game.getFireworks().get(Suit.BLUE).add(new Card(3, Suit.BLUE));
+
+        game.getPlayerHands().get(p3).remove(0);
+        game.getPlayerHands().get(p3).add(0, new Card(2, Suit.BLUE));
+
+        int numFuses = game.getFuses().size();
+        game.signalPlayerAction(p3);
+
+        assertThat(game.getFuses().size(), is(numFuses - 1));
+    }
+
+    @Test
+    public void TestAllOnesArePlayable() {
+        for (Suit s : Suit.values()) {
+            Card card = new Card(1, s);
+            assertThat(game.isCardPlayable(card), is(true));
+        }
+    }
+
+    @Test
+    public void TestIsCardPlayable() {
+        game.getFireworks().get(Suit.BLUE).add(new Card(1, Suit.BLUE));
+        game.getFireworks().get(Suit.BLUE).add(new Card(2, Suit.BLUE));
+        game.getFireworks().get(Suit.BLUE).add(new Card(3, Suit.BLUE));
+
+        game.getFireworks().get(Suit.GREEN).add(new Card(1, Suit.GREEN));
+        game.getFireworks().get(Suit.GREEN).add(new Card(2, Suit.GREEN));
+        game.getFireworks().get(Suit.GREEN).add(new Card(3, Suit.GREEN));
+        game.getFireworks().get(Suit.GREEN).add(new Card(4, Suit.GREEN));
+
+        game.getFireworks().get(Suit.WHITE).add(new Card(1, Suit.WHITE));
+
+        // no red
+
+        game.getFireworks().get(Suit.YELLOW).add(new Card(1, Suit.YELLOW));
+        game.getFireworks().get(Suit.YELLOW).add(new Card(2, Suit.YELLOW));
+        game.getFireworks().get(Suit.YELLOW).add(new Card(3, Suit.YELLOW));
+        game.getFireworks().get(Suit.YELLOW).add(new Card(4, Suit.YELLOW));
+        game.getFireworks().get(Suit.YELLOW).add(new Card(5, Suit.YELLOW));
+
+        assertThat(game.isCardPlayable(new Card(1, Suit.RED)), is(true));
+        assertThat(game.isCardPlayable(new Card(1, Suit.BLUE)), is(false));
+        assertThat(game.isCardPlayable(new Card(3, Suit.YELLOW)), is(false));
+        assertThat(game.isCardPlayable(new Card(2, Suit.WHITE)), is(true));
     }
 }
