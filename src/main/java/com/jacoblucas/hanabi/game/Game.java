@@ -47,12 +47,40 @@ public class Game {
     }
 
     // Runs the main loop of the game
-    protected void run() {
+    private void run() {
         while (!gameOver()) {
             Player player = players.poll();
             signalPlayerAction(player);
             players.add(player);
         }
+
+        score();
+    }
+
+    public int score() {
+        int score = 0;
+        for (Suit s : fireworks.keySet()) {
+            Stack<Card> cards = fireworks.get(s);
+            if (!cards.isEmpty()) {
+                score += cards.peek().getNumber();
+            }
+        }
+
+        if (score == 25) {
+            System.out.println("Score = 25! Legendary, everyone left speechless, stars in their eyes!");
+        } else if (score >= 21 && score < 25) {
+            System.out.println("Score = " + score + "! Amazing, they will be talking about it for weeks!");
+        } else if (score >= 16 && score < 21) {
+            System.out.println("Score = " + score + "! Excellent. Crowd pleasing.");
+        } else if (score >= 11 && score < 16) {
+            System.out.println("Score = " + score + "! Honorable attempt, but quickly forgotten...");
+        } else if (score >= 6 && score < 11) {
+            System.out.println("Score = " + score + "! Mediocre, just a hint of scattered applause...");
+        } else {
+            System.out.println("Score = " + score + "! Horrible, booed by the crowd...");
+        }
+
+        return score;
     }
 
     protected Action signalPlayerAction(Player player) {
@@ -82,6 +110,7 @@ public class Game {
 
         if (deck.size() == 0) {
             player.setTakenLastAction(true);
+            System.out.println("Player " + player.getName() + " has taken their last turn!");
         }
 
         return action;

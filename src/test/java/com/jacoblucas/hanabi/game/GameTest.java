@@ -161,4 +161,30 @@ public class GameTest {
 
         assertThat(game.getTips().size(), is(NUM_TIPS));
     }
+
+    @Test
+    public void scoreSumsTheTopCardOfEachFirework() {
+        game.seed();
+
+        game.getFireworks().get(Suit.BLUE).add(new Card(1, Suit.BLUE));
+        game.getFireworks().get(Suit.BLUE).add(new Card(2, Suit.BLUE));
+        game.getFireworks().get(Suit.BLUE).add(new Card(3, Suit.BLUE)); // top card
+
+        game.getFireworks().get(Suit.GREEN).add(new Card(1, Suit.GREEN));
+        game.getFireworks().get(Suit.GREEN).add(new Card(2, Suit.GREEN));
+        game.getFireworks().get(Suit.GREEN).add(new Card(3, Suit.GREEN));
+        game.getFireworks().get(Suit.GREEN).add(new Card(4, Suit.GREEN)); // top card
+
+        game.getFireworks().get(Suit.WHITE).add(new Card(1, Suit.WHITE));
+
+        // no red
+
+        game.getFireworks().get(Suit.YELLOW).add(new Card(1, Suit.YELLOW));
+        game.getFireworks().get(Suit.YELLOW).add(new Card(2, Suit.YELLOW));
+        game.getFireworks().get(Suit.YELLOW).add(new Card(3, Suit.YELLOW));
+        game.getFireworks().get(Suit.YELLOW).add(new Card(4, Suit.YELLOW));
+        game.getFireworks().get(Suit.YELLOW).add(new Card(5, Suit.YELLOW)); // top card
+
+        assertThat(game.score(), is(13)); // 3 + 4 + 1 + 0 + 5
+    }
 }
