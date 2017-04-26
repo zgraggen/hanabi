@@ -24,7 +24,7 @@ public class Deck {
 
     // Builds a new, in-order deck of cards for the game.
     // In each deck there are five 1's, two 2's, two 3's, two 4's, and one 5.
-    protected static LinkedList<Card> newInOrderDeck() {
+    static LinkedList<Card> newInOrderDeck() {
         LinkedList<Card> cards = new LinkedList<>();
         for (Suit suit : Suit.values()) {
             for (int i=1; i<=5; i++) {

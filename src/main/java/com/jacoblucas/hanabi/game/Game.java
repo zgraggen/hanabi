@@ -94,7 +94,7 @@ public class Game {
         switch (action.getActionType()) {
             case DISCARD:
                 // discard the card
-                Card discardedCard = removeCardFromHand(player, action.getCardIndexInPlayerHand());
+                Card discardedCard = removeCardFromHand(player, action.getImpactedCardIndices().get(0));
 
                 // give a replacement card for the card that was discarded
                 Card newCard = deck.deal();
@@ -109,7 +109,7 @@ public class Game {
                 break;
 
             case PLAY:
-                Card playedCard = removeCardFromHand(player, action.getCardIndexInPlayerHand());
+                Card playedCard = removeCardFromHand(player, action.getImpactedCardIndices().get(0));
                 System.out.println("Player " + player.getName() + " played a " + playedCard);
 
                 if (isCardPlayable(playedCard)) {

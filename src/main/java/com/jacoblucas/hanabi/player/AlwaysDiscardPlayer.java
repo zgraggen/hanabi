@@ -14,6 +14,6 @@ public class AlwaysDiscardPlayer extends Player {
 
     @Override
     public Action takeAction(Map<Suit, Stack<Card>> fireworks, Map<Player, List<Card>> playerHands) {
-        return new Action(ActionType.DISCARD, 0);
+        return new DiscardAction(0);
     }
 }

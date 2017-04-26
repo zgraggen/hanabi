@@ -1,11 +1,18 @@
 package com.jacoblucas.hanabi.player;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import java.util.List;
 
-@AllArgsConstructor
 // Action represents the action a player took in the game of Hanabi.
-public class Action {
-    @Getter private ActionType actionType;
-    @Getter private int cardIndexInPlayerHand;
+public interface Action {
+    /**
+     * Gets the ActionType of this Action - either a DISCARD, PLAY, or TIP.
+     * @return the ActionType of this Action.
+     */
+    ActionType getActionType();
+
+    /**
+     * Gets the indices of the cards in the player hand affected by this action.
+     * @return the indices of the cards in the player hand affected by this action.
+     */
+    List<Integer> getImpactedCardIndices();
 }

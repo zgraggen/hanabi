@@ -7,13 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-public class AlwaysPlayPlayer extends Player {
-    public AlwaysPlayPlayer(String name) {
-        this.name = name;
-    }
+public class RandomTipPlayer extends Player {
 
     @Override
     public Action takeAction(Map<Suit, Stack<Card>> fireworks, Map<Player, List<Card>> playerHands) {
-        return new PlayAction(0);
+        return null;
     }
 }
