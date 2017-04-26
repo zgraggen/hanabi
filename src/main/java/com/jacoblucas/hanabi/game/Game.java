@@ -13,11 +13,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.UUID;
 
 // https://en.wikipedia.org/wiki/Hanabi_(card_game)
 
@@ -28,6 +31,7 @@ public class Game {
     protected static int NUM_TIPS = 8;
 
     private Queue<Player> players;
+    @Getter(AccessLevel.PROTECTED) private Map<Player, List<Card>> playerHands;
     private Queue<Tip> tips;
     @Setter(AccessLevel.PROTECTED) private Queue<Fuse> fuses;
     @Setter(AccessLevel.PROTECTED) private Deck deck;
@@ -38,7 +42,8 @@ public class Game {
     protected void seed() {
         for (int i=0; i<5; i++) {
             for (Player p : players) {
-                deck.deal(p);
+                Card c = deck.deal();
+                playerHands.get(p).add(c);
             }
         }
         for (Suit s : Suit.values()) {
@@ -84,21 +89,22 @@ public class Game {
     }
 
     protected Action signalPlayerAction(Player player) {
-        Action action = player.takeAction();
+        Action action = player.takeAction(fireworks, getOtherPlayerHands(player));
         switch (action.getActionType()) {
             case DISCARD:
                 // discard the card
-                player.removeCardFromHand(action.getCard());
+                Card discardedCard = removeCardFromHand(player, action.getCardIndexInPlayerHand());
 
                 // give a replacement card for the card that was discarded
-                deck.deal(player);
+                Card newCard = deck.deal();
+                playerHands.get(player).add(newCard);
 
                 // replace a tip
                 if (tips.size() < NUM_TIPS) {
                     tips.add(new Tip());
                 }
 
-                System.out.println("Player " + player.getName() + " discarded a " + action.getCard());
+                System.out.println("Player " + player.getName() + " discarded a " + discardedCard);
             case PLAY:
                 // give a replacement card for the card that was played
                 // if played played a 5, add back a tip
@@ -114,6 +120,24 @@ public class Game {
         }
 
         return action;
+    }
+
+    private Map<Player, List<Card>> getOtherPlayerHands(Player player) {
+        Map<Player, List<Card>> others = new HashMap<>();
+        for (Player p : playerHands.keySet()) {
+            if (p != player) {
+                others.put(p, playerHands.get(p));
+            }
+        }
+        return others;
+    }
+
+    private Card removeCardFromHand(Player player, int cardIndexInPlayerHand) {
+        try {
+            return playerHands.get(player).remove(cardIndexInPlayerHand);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     // Detects game over.
@@ -158,11 +182,14 @@ public class Game {
         Queue<Tip> tips = new LinkedList<>();
         Queue<Fuse> fuses = new LinkedList<>();
         Map<Suit, Stack<Card>> fireworks = new HashMap<>();
+        Map<Player, List<Card>> playerHands = new HashMap<>();
 
         // TODO: read in num players from command line
         int n = 3;
         for (int i=0; i<n; i++) {
-            players.add(new AlwaysDiscardPlayer());
+            AlwaysDiscardPlayer player = new AlwaysDiscardPlayer(UUID.randomUUID().toString());
+            players.add(player);
+            playerHands.put(player, new ArrayList<>());
         }
 
         for (int i=0; i<8; i++) {
@@ -179,6 +206,7 @@ public class Game {
                 .tips(tips)
                 .fuses(fuses)
                 .fireworks(fireworks)
+                .playerHands(playerHands)
                 .deck(new Deck())
                 .build();
 

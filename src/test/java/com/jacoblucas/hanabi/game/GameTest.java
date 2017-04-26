@@ -5,18 +5,20 @@ import com.jacoblucas.hanabi.model.Deck;
 import com.jacoblucas.hanabi.model.Fuse;
 import com.jacoblucas.hanabi.model.Suit;
 import com.jacoblucas.hanabi.model.Tip;
-import com.jacoblucas.hanabi.player.Action;
 import com.jacoblucas.hanabi.player.AlwaysDiscardPlayer;
 import com.jacoblucas.hanabi.player.Player;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.UUID;
 
 import static com.jacoblucas.hanabi.game.Game.NUM_TIPS;
 import static org.hamcrest.CoreMatchers.is;
@@ -32,12 +34,15 @@ public class GameTest {
         Queue<Tip> tips = new LinkedList<>();
         Queue<Fuse> fuses = new LinkedList<>();
         Map<Suit, Stack<Card>> fireworks = new HashMap<>();
+        Map<Player, List<Card>> playerHands = new HashMap<>();
         for (Suit s : Suit.values()) {
             fireworks.put(s, new Stack<>());
         }
 
         for (int i=0; i<NUM_PLAYERS; i++) {
-            players.add(new AlwaysDiscardPlayer());
+            AlwaysDiscardPlayer player = new AlwaysDiscardPlayer(UUID.randomUUID().toString());
+            players.add(player);
+            playerHands.put(player, new ArrayList<>());
         }
 
         for (int i = 0; i< NUM_TIPS; i++) {
@@ -54,6 +59,7 @@ public class GameTest {
                 .tips(tips)
                 .fuses(fuses)
                 .fireworks(fireworks)
+                .playerHands(playerHands)
                 .deck(new Deck())
                 .build();
     }
@@ -67,8 +73,8 @@ public class GameTest {
     public void SeedDealsFiveCardsToEachPlayer() {
         game.seed();
 
-        for (Player p : game.getPlayers()) {
-            assertThat(p.getHand().size(), is(5));
+        for (List<Card> hand : game.getPlayerHands().values()) {
+            assertThat(hand.size(), is(5));
         }
     }
 
@@ -146,7 +152,7 @@ public class GameTest {
 
         Player p = game.getPlayers().peek(); // AlwaysDiscardPlayer
         game.signalPlayerAction(p);
-        assertThat(p.getHand().size(), is(5));
+        assertThat(game.getPlayerHands().get(p).size(), is(5));
     }
 
     @Test

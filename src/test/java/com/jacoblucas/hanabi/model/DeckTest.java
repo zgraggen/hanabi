@@ -76,32 +76,23 @@ public class DeckTest {
     }
 
     @Test
-    public void DealGivesCardToPlayer() {
-        Player player = new AlwaysDiscardPlayer();
-        assertThat(player.getHand(), empty());
-
+    public void DealReturnsTopCardOfDeck() {
         Deck deck = new Deck();
-        Card card = deck.deal(player);
-
-        assertThat(player.getHand(), contains(card));
+        Card topCard = deck.getCards().peek();
+        Card c = deck.deal();
+        assertThat(c, is(topCard));
     }
 
     @Test
     public void DealDoesNothingForEmptyDeck() {
-        Player player = new AlwaysDiscardPlayer();
-        assertThat(player.getHand(), empty());
-
         Deck deck = new Deck();
-        deck.deal(player);
-        assertThat(player.getHand().size(), is(1));
 
         // empty the deck
         while (!deck.getCards().isEmpty()) {
             deck.getCards().poll();
         }
 
-        Card card = deck.deal(player);
+        Card card = deck.deal();
         assertThat(card, nullValue());
-        assertThat(player.getHand().size(), is(1));
     }
 }
