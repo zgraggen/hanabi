@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.empty;
 public class PlayerTest {
     @Test
     public void DealPutsCardInPlayersHand() {
-        Player player = new Player();
+        Player player = new AlwaysDiscardPlayer();
 
         assertThat(player.getHand(), empty());
 

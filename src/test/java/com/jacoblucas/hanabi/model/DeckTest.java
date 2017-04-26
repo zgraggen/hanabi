@@ -1,5 +1,6 @@
 package com.jacoblucas.hanabi.model;
 
+import com.jacoblucas.hanabi.player.AlwaysDiscardPlayer;
 import com.jacoblucas.hanabi.player.Player;
 import org.junit.Test;
 
@@ -76,7 +77,7 @@ public class DeckTest {
 
     @Test
     public void DealGivesCardToPlayer() {
-        Player player = new Player();
+        Player player = new AlwaysDiscardPlayer();
         assertThat(player.getHand(), empty());
 
         Deck deck = new Deck();
@@ -87,7 +88,7 @@ public class DeckTest {
 
     @Test
     public void DealDoesNothingForEmptyDeck() {
-        Player player = new Player();
+        Player player = new AlwaysDiscardPlayer();
         assertThat(player.getHand(), empty());
 
         Deck deck = new Deck();
