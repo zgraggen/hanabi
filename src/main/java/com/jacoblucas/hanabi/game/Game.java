@@ -41,8 +41,11 @@ public class Game {
     private Map<Suit, Stack<Card>> fireworks;
     private boolean playersHaveWon = false;
 
-    // Deals out the initial cards to the players
+    // Initialises player hands and the fireworks, Deals out the initial cards to the players
     void seed() {
+        for (Player p : players) {
+            playerHands.put(p, new ArrayList<>());
+        }
         for (int i=0; i<5; i++) {
             for (Player p : players) {
                 Card c = deck.deal();
@@ -108,12 +111,12 @@ public class Game {
                     tips.add(new Tip());
                 }
 
-                System.out.println("Player " + player.getName() + " discarded a " + discardedCard);
+                System.out.println(player.getName() + " discarded a " + discardedCard);
                 break;
 
             case PLAY:
                 Card playedCard = removeCardFromHand(player, action.getImpactedCardIndices().get(0));
-                System.out.println("Player " + player.getName() + " played a " + playedCard);
+                System.out.println(player.getName() + " played a " + playedCard);
 
                 if (isCardPlayable(playedCard)) {
                     // put the card on the table
@@ -128,7 +131,7 @@ public class Game {
                 } else {
                     // take off a fuse
                     fuses.poll();
-                    System.out.println("Player " + player.getName() + " triggered a fuse (" + playedCard + " cannot be played)!");
+                    System.out.println(player.getName() + " triggered a fuse (" + playedCard + " cannot be played)!");
                 }
 
                 // give a replacement card for the card that was played
@@ -153,13 +156,13 @@ public class Game {
                     receivingPlayer.receiveSuitTip(tip.getTipSuit(), tip.getImpactedCardIndices());
                 }
 
-                System.out.println("Player " + player.getName() + " gave a tip to Player '" + receivingPlayer.getName() + "' : Cards at " + tip.getImpactedCardIndices() + " are " + (tip.getType() == TipType.NUMBER ? tip.getTipNumber() : tip.getTipSuit()));
+                System.out.println(player.getName() + " gave a tip to Player '" + receivingPlayer.getName() + "' : Cards at " + tip.getImpactedCardIndices() + " are " + (tip.getType() == TipType.NUMBER ? tip.getTipNumber() : tip.getTipSuit()));
                 break;
         }
 
         if (deck.size() == 0) {
             player.setTakenLastAction(true);
-            System.out.println("Player " + player.getName() + " has taken their last turn!");
+            System.out.println(player.getName() + " has taken their last turn!");
         }
 
         return action;
@@ -243,9 +246,6 @@ public class Game {
         players.add(discarder);
         players.add(player);
         players.add(tipper);
-        playerHands.put(discarder, new ArrayList<>());
-        playerHands.put(player, new ArrayList<>());
-        playerHands.put(tipper, new ArrayList<>());
 
         for (int i=0; i<8; i++) {
             tips.add(new Tip());

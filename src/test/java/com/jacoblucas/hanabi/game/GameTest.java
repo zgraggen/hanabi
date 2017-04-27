@@ -51,9 +51,6 @@ public class GameTest {
         players.add(p1);
         players.add(p2);
         players.add(p3);
-        playerHands.put(p1, new ArrayList<>());
-        playerHands.put(p2, new ArrayList<>());
-        playerHands.put(p3, new ArrayList<>());
 
         for (int i = 0; i< NUM_TIPS; i++) {
             tips.add(new Tip());
