@@ -5,17 +5,37 @@ import com.jacoblucas.hanabi.model.Suit;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.Vector;
 
 public abstract class Player {
-    @Getter
-    protected String name;
+    @Getter protected String name;
+    @Getter @Setter private boolean takenLastAction;
+    @Getter private List<Integer> knownNumbers;
+    @Getter private List<Suit> knownSuits;
 
-    @Getter
-    @Setter
-    private boolean takenLastAction;
+    Player(String name) {
+        this.name = name;
+        knownNumbers = new Vector<>(Arrays.asList(null, null, null, null, null));
+        knownSuits = new Vector<>(Arrays.asList(null, null, null, null, null));
+    }
+
+    public void receiveNumberTip(int number, List<Integer> indices) {
+        for (Integer i : indices) {
+            knownNumbers.remove(i.intValue());
+            knownNumbers.add(i, number);
+        }
+    }
+
+    public void receiveSuitTip(Suit suit, List<Integer> indices) {
+        for (Integer i : indices) {
+            knownSuits.remove(i.intValue());
+            knownSuits.add(i, suit);
+        }
+    }
 
     /**
      * Method for all implementations of Player to override.
@@ -23,5 +43,6 @@ public abstract class Player {
      * @param playerHands A map of player -> List<Card> representing the other player's hands.
      * @return An implementation of Action, representing what action the player decided to take.
      */
+    // TODO: tip, fuse visibility
     public abstract Action takeAction(Map<Suit, Stack<Card>> fireworks, Map<Player, List<Card>> playerHands);
 }

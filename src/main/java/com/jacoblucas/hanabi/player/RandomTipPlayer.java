@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomTipPlayer extends Player {
     public RandomTipPlayer(String name) {
-        this.name = name;
+        super(name);
     }
 
     @Override

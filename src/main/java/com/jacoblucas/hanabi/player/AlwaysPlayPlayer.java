@@ -9,7 +9,7 @@ import java.util.Stack;
 
 public class AlwaysPlayPlayer extends Player {
     public AlwaysPlayPlayer(String name) {
-        this.name = name;
+        super(name);
     }
 
     @Override

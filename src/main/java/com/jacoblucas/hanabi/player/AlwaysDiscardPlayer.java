@@ -9,7 +9,7 @@ import java.util.Stack;
 
 public class AlwaysDiscardPlayer extends Player {
     public AlwaysDiscardPlayer(String name) {
-        this.name = name;
+        super(name);
     }
 
     @Override

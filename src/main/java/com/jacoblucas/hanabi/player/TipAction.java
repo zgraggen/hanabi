@@ -10,14 +10,14 @@ public class TipAction implements Action {
 
     @Getter private Player receivingPlayer;
     @Getter private TipType type;
-    @Getter private int tipNumber;
+    @Getter private Integer tipNumber;
     @Getter private Suit tipSuit;
 
     /**
      * Gives a tip to a player, telling them that all cards at the provided indices are a certain number.
      * @param receivingPlayer The player receiving the tip.
      * @param tipNumber The value of the number in the tip.
-     * @param tippedCardIndices The indices of the receiving player's hand that are the provided number.
+     * @param tippedCardIndices The (0 based) indices of the receiving player's hand that are the provided number.
      */
     TipAction(Player receivingPlayer, int tipNumber, List<Integer> tippedCardIndices) {
         this.receivingPlayer = receivingPlayer;
@@ -31,11 +31,11 @@ public class TipAction implements Action {
      * Gives a tip to a player, telling them that all cards at the provided indices are a certain suit.
      * @param receivingPlayer The player receiving the tip.
      * @param tipSuit The value of the suit in the tip.
-     * @param tippedCardIndices The indices of the receiving player's hand that are the provided suit.
+     * @param tippedCardIndices The (0 based) indices of the receiving player's hand that are the provided suit.
      */
     TipAction(Player receivingPlayer, Suit tipSuit, List<Integer> tippedCardIndices) {
         this.receivingPlayer = receivingPlayer;
-        this.tipNumber = -1;
+        this.tipNumber = null;
         this.tippedCardIndices = tippedCardIndices;
         this.tipSuit = tipSuit;
         this.type = TipType.SUIT;

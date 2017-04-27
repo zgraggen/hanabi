@@ -138,12 +138,22 @@ public class Game {
                 break;
 
             case TIP:
+                // TODO: handle case when player tips and there aren't any available tips in the game
+
+                // take off a tip
+                tips.poll();
+
                 // Give player some information
                 TipAction tip = (TipAction) action;
 
-                // TODO: inform player somehow
+                Player receivingPlayer = tip.getReceivingPlayer();
+                if (tip.getType() == TipType.NUMBER) {
+                    receivingPlayer.receiveNumberTip(tip.getTipNumber(), tip.getImpactedCardIndices());
+                } else {
+                    receivingPlayer.receiveSuitTip(tip.getTipSuit(), tip.getImpactedCardIndices());
+                }
 
-                System.out.println("Player " + player.getName() + " gave a tip to Player '" + tip.getReceivingPlayer().getName() + "' : Cards at " + tip.getImpactedCardIndices() + " are " + (tip.getType() == TipType.NUMBER ? tip.getTipNumber() : tip.getTipSuit()));
+                System.out.println("Player " + player.getName() + " gave a tip to Player '" + receivingPlayer.getName() + "' : Cards at " + tip.getImpactedCardIndices() + " are " + (tip.getType() == TipType.NUMBER ? tip.getTipNumber() : tip.getTipSuit()));
                 break;
         }
 

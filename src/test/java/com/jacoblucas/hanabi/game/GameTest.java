@@ -8,6 +8,9 @@ import com.jacoblucas.hanabi.model.Tip;
 import com.jacoblucas.hanabi.player.AlwaysDiscardPlayer;
 import com.jacoblucas.hanabi.player.AlwaysPlayPlayer;
 import com.jacoblucas.hanabi.player.Player;
+import com.jacoblucas.hanabi.player.RandomTipPlayer;
+import com.jacoblucas.hanabi.player.TipAction;
+import com.jacoblucas.hanabi.player.TipType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class GameTest {
     private Game game;
     private AlwaysDiscardPlayer p1;
-    private AlwaysDiscardPlayer p2;
+    private RandomTipPlayer p2;
     private AlwaysPlayPlayer p3;
 
     @Before
@@ -43,7 +46,7 @@ public class GameTest {
         }
 
         p1 = new AlwaysDiscardPlayer(UUID.randomUUID().toString());
-        p2 = new AlwaysDiscardPlayer(UUID.randomUUID().toString());
+        p2 = new RandomTipPlayer(UUID.randomUUID().toString());
         p3 = new AlwaysPlayPlayer(UUID.randomUUID().toString());
         players.add(p1);
         players.add(p2);
@@ -280,5 +283,32 @@ public class GameTest {
         assertThat(game.isCardPlayable(new Card(1, Suit.BLUE)), is(false));
         assertThat(game.isCardPlayable(new Card(3, Suit.YELLOW)), is(false));
         assertThat(game.isCardPlayable(new Card(2, Suit.WHITE)), is(true));
+    }
+
+    @Test
+    public void TipActionInformsPlayer() {
+        TipAction tip = (TipAction) game.signalPlayerAction(p2);
+        Player receiver = tip.getReceivingPlayer();
+        List<Integer> indices = tip.getImpactedCardIndices();
+        TipType type = tip.getType();
+
+        if (type == TipType.SUIT) {
+            for (Integer i : indices) {
+                assertThat(receiver.getKnownSuits().get(i), is(tip.getTipSuit()));
+            }
+        } else {
+            for (Integer i : indices) {
+                assertThat(receiver.getKnownNumbers().get(i), is(tip.getTipNumber()));
+            }
+        }
+    }
+
+    @Test
+    public void TipActionConsumesATip() {
+        int numTips = game.getTips().size();
+
+        game.signalPlayerAction(p2);
+
+        assertThat(game.getTips().size(), is(numTips - 1));
     }
 }
