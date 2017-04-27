@@ -1,7 +1,9 @@
 package com.jacoblucas.hanabi.player;
 
 import com.jacoblucas.hanabi.model.Card;
+import com.jacoblucas.hanabi.model.Fuse;
 import com.jacoblucas.hanabi.model.Suit;
+import com.jacoblucas.hanabi.model.Tip;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,8 +43,9 @@ public abstract class Player {
      * Method for all implementations of Player to override.
      * @param fireworks The current state of each firework being built in the game.
      * @param playerHands A map of player -> List<Card> representing the other player's hands.
+     * @param remainingTips The number of remaining tips in the game.
+     * @param remainingFuses The number of remaining fuses in the game.
      * @return An implementation of Action, representing what action the player decided to take.
      */
-    // TODO: tip, fuse visibility
-    public abstract Action takeAction(Map<Suit, Stack<Card>> fireworks, Map<Player, List<Card>> playerHands);
+    public abstract Action takeAction(Map<Suit, Stack<Card>> fireworks, Map<Player, List<Card>> playerHands, int remainingTips, int remainingFuses);
 }

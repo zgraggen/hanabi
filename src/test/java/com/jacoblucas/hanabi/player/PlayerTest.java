@@ -16,7 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class PlayerTest {
     private Player p = new Player("MyPlayer") {
         @Override
-        public Action takeAction(Map<Suit, Stack<Card>> fireworks, Map<Player, List<Card>> playerHands) {
+        public Action takeAction(Map<Suit, Stack<Card>> fireworks, Map<Player, List<Card>> playerHands, int remainingTips, int remainingFuses) {
             return null;
         }
     };

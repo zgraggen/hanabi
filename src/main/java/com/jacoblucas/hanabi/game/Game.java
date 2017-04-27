@@ -92,7 +92,7 @@ public class Game {
     }
 
     Action signalPlayerAction(Player player) {
-        Action action = player.takeAction(fireworks, getOtherPlayerHands(player));
+        Action action = player.takeAction(fireworks, getOtherPlayerHands(player), tips.size(), fuses.size());
 
         switch (action.getActionType()) {
             case DISCARD:
