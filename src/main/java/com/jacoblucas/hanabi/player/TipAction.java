@@ -1,13 +1,45 @@
 package com.jacoblucas.hanabi.player;
 
-import lombok.AllArgsConstructor;
+import com.jacoblucas.hanabi.model.Suit;
+import lombok.Getter;
 
 import java.util.List;
 
-@AllArgsConstructor
 public class TipAction implements Action {
-    private TipType type;
-    private List<Integer> tippedCardIncides;
+    private List<Integer> tippedCardIndices;
+
+    @Getter private Player receivingPlayer;
+    @Getter private TipType type;
+    @Getter private int tipNumber;
+    @Getter private Suit tipSuit;
+
+    /**
+     * Gives a tip to a player, telling them that all cards at the provided indices are a certain number.
+     * @param receivingPlayer The player receiving the tip.
+     * @param tipNumber The value of the number in the tip.
+     * @param tippedCardIndices The indices of the receiving player's hand that are the provided number.
+     */
+    TipAction(Player receivingPlayer, int tipNumber, List<Integer> tippedCardIndices) {
+        this.receivingPlayer = receivingPlayer;
+        this.tipNumber = tipNumber;
+        this.tippedCardIndices = tippedCardIndices;
+        this.tipSuit = null;
+        this.type = TipType.NUMBER;
+    }
+
+    /**
+     * Gives a tip to a player, telling them that all cards at the provided indices are a certain suit.
+     * @param receivingPlayer The player receiving the tip.
+     * @param tipSuit The value of the suit in the tip.
+     * @param tippedCardIndices The indices of the receiving player's hand that are the provided suit.
+     */
+    TipAction(Player receivingPlayer, Suit tipSuit, List<Integer> tippedCardIndices) {
+        this.receivingPlayer = receivingPlayer;
+        this.tipNumber = -1;
+        this.tippedCardIndices = tippedCardIndices;
+        this.tipSuit = tipSuit;
+        this.type = TipType.SUIT;
+    }
 
     @Override
     public ActionType getActionType() {
@@ -16,6 +48,6 @@ public class TipAction implements Action {
 
     @Override
     public List<Integer> getImpactedCardIndices() {
-        return tippedCardIncides;
+        return tippedCardIndices;
     }
 }

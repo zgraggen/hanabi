@@ -6,8 +6,12 @@ import com.jacoblucas.hanabi.model.Fuse;
 import com.jacoblucas.hanabi.model.Suit;
 import com.jacoblucas.hanabi.model.Tip;
 import com.jacoblucas.hanabi.player.Action;
+import com.jacoblucas.hanabi.player.AlwaysDiscardPlayer;
 import com.jacoblucas.hanabi.player.AlwaysPlayPlayer;
 import com.jacoblucas.hanabi.player.Player;
+import com.jacoblucas.hanabi.player.RandomTipPlayer;
+import com.jacoblucas.hanabi.player.TipAction;
+import com.jacoblucas.hanabi.player.TipType;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
-import java.util.UUID;
 
 // https://en.wikipedia.org/wiki/Hanabi_(card_game)
 
@@ -136,7 +139,11 @@ public class Game {
 
             case TIP:
                 // Give player some information
-                // TODO
+                TipAction tip = (TipAction) action;
+
+                // TODO: inform player somehow
+
+                System.out.println("Player " + player.getName() + " gave a tip to Player '" + tip.getReceivingPlayer().getName() + "' : Cards at " + tip.getImpactedCardIndices() + " are " + (tip.getType() == TipType.NUMBER ? tip.getTipNumber() : tip.getTipSuit()));
                 break;
         }
 
@@ -219,12 +226,15 @@ public class Game {
         Map<Player, List<Card>> playerHands = new HashMap<>();
 
         // TODO: read in num players from command line
-        int n = 3;
-        for (int i=0; i<n; i++) {
-            Player player = new AlwaysPlayPlayer(UUID.randomUUID().toString());
-            players.add(player);
-            playerHands.put(player, new ArrayList<>());
-        }
+        Player discarder = new AlwaysDiscardPlayer("Discarder");
+        Player player = new AlwaysPlayPlayer("Player");
+        Player tipper = new RandomTipPlayer("Tipper");
+        players.add(discarder);
+        players.add(player);
+        players.add(tipper);
+        playerHands.put(discarder, new ArrayList<>());
+        playerHands.put(player, new ArrayList<>());
+        playerHands.put(tipper, new ArrayList<>());
 
         for (int i=0; i<8; i++) {
             tips.add(new Tip());
