@@ -177,6 +177,7 @@ public class Game {
         return stk.peek().getNumber() == playedCard.getNumber() - 1;
     }
 
+    // TODO: sort this by player turn, add a turn position into the player class?
     private Map<Player, List<Card>> getOtherPlayerHands(Player player) {
         Map<Player, List<Card>> others = new HashMap<>();
         for (Player p : playerHands.keySet()) {
