@@ -1,5 +1,6 @@
 package com.jacoblucas.hanabi.player;
 
+import com.jacoblucas.hanabi.action.Action;
 import com.jacoblucas.hanabi.model.Card;
 import com.jacoblucas.hanabi.model.Suit;
 import org.junit.Test;

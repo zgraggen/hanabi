@@ -1,9 +1,9 @@
 package com.jacoblucas.hanabi.player;
 
+import com.jacoblucas.hanabi.action.Action;
+import com.jacoblucas.hanabi.action.PlayAction;
 import com.jacoblucas.hanabi.model.Card;
-import com.jacoblucas.hanabi.model.Fuse;
 import com.jacoblucas.hanabi.model.Suit;
-import com.jacoblucas.hanabi.model.Tip;
 
 import java.util.List;
 import java.util.Map;

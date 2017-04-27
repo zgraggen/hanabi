@@ -1,4 +1,4 @@
-package com.jacoblucas.hanabi.player;
+package com.jacoblucas.hanabi.action;
 
 import lombok.AllArgsConstructor;
 
@@ -6,16 +6,16 @@ import java.util.Collections;
 import java.util.List;
 
 @AllArgsConstructor
-public class PlayAction implements Action {
-    private int cardIndexToPlay;
+public class DiscardAction implements Action {
+    private int cardIndexToDiscard;
 
     @Override
     public ActionType getActionType() {
-        return ActionType.PLAY;
+        return ActionType.DISCARD;
     }
 
     @Override
     public List<Integer> getImpactedCardIndices() {
-        return Collections.singletonList(cardIndexToPlay);
+        return Collections.singletonList(cardIndexToDiscard);
     }
 }

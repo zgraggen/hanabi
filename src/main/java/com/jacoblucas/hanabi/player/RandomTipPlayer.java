@@ -1,9 +1,10 @@
 package com.jacoblucas.hanabi.player;
 
+import com.jacoblucas.hanabi.action.Action;
+import com.jacoblucas.hanabi.action.TipAction;
+import com.jacoblucas.hanabi.action.TipType;
 import com.jacoblucas.hanabi.model.Card;
-import com.jacoblucas.hanabi.model.Fuse;
 import com.jacoblucas.hanabi.model.Suit;
-import com.jacoblucas.hanabi.model.Tip;
 
 import java.util.ArrayList;
 import java.util.List;

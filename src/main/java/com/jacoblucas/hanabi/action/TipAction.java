@@ -1,6 +1,7 @@
-package com.jacoblucas.hanabi.player;
+package com.jacoblucas.hanabi.action;
 
 import com.jacoblucas.hanabi.model.Suit;
+import com.jacoblucas.hanabi.player.Player;
 import lombok.Getter;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class TipAction implements Action {
      * @param tipNumber The value of the number in the tip.
      * @param tippedCardIndices The (0 based) indices of the receiving player's hand that are the provided number.
      */
-    TipAction(Player receivingPlayer, int tipNumber, List<Integer> tippedCardIndices) {
+    public TipAction(Player receivingPlayer, int tipNumber, List<Integer> tippedCardIndices) {
         this.receivingPlayer = receivingPlayer;
         this.tipNumber = tipNumber;
         this.tippedCardIndices = tippedCardIndices;
@@ -33,7 +34,7 @@ public class TipAction implements Action {
      * @param tipSuit The value of the suit in the tip.
      * @param tippedCardIndices The (0 based) indices of the receiving player's hand that are the provided suit.
      */
-    TipAction(Player receivingPlayer, Suit tipSuit, List<Integer> tippedCardIndices) {
+    public TipAction(Player receivingPlayer, Suit tipSuit, List<Integer> tippedCardIndices) {
         this.receivingPlayer = receivingPlayer;
         this.tipNumber = null;
         this.tippedCardIndices = tippedCardIndices;

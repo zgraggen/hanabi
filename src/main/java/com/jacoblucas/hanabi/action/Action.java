@@ -1,4 +1,4 @@
-package com.jacoblucas.hanabi.player;
+package com.jacoblucas.hanabi.action;
 
 import java.util.List;
 

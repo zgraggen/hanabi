@@ -1,4 +1,4 @@
-package com.jacoblucas.hanabi.player;
+package com.jacoblucas.hanabi.action;
 
 // ActionType represents the possible types of actions a player can take.
 public enum ActionType {
