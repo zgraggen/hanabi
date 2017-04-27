@@ -46,5 +46,9 @@ public abstract class Player {
      * @param remainingFuses The number of remaining fuses in the game.
      * @return An implementation of Action, representing what action the player decided to take.
      */
-    public abstract Action takeAction(Map<Suit, Stack<Card>> fireworks, Map<Player, List<Card>> playerHands, int remainingTips, int remainingFuses);
+    public abstract Action takeAction(
+            Map<Suit, Stack<Card>> fireworks,
+            Map<Player, List<Card>> playerHands,
+            int remainingTips,
+            int remainingFuses);
 }
