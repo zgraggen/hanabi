@@ -1,7 +1,5 @@
 package com.jacoblucas.hanabi.model;
 
-import com.jacoblucas.hanabi.player.AlwaysDiscardPlayer;
-import com.jacoblucas.hanabi.player.Player;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -9,11 +7,8 @@ import java.util.Map;
 import java.util.Queue;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
 
 public class DeckTest {
     @Test
