@@ -39,6 +39,7 @@ public class Game {
     @Setter(AccessLevel.PROTECTED) private Queue<Fuse> fuses;
     @Setter(AccessLevel.PROTECTED) private Deck deck;
     private Map<Suit, Stack<Card>> fireworks;
+    @Builder.Default
     private boolean playersHaveWon = false;
 
     // Initialises player hands and the fireworks, Deals out the initial cards to the players
