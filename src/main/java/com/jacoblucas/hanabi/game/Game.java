@@ -6,6 +6,7 @@ import com.jacoblucas.hanabi.model.Fuse;
 import com.jacoblucas.hanabi.model.Suit;
 import com.jacoblucas.hanabi.model.Tip;
 import com.jacoblucas.hanabi.action.Action;
+import com.jacoblucas.hanabi.action.ActionType;
 import com.jacoblucas.hanabi.player.AlwaysDiscardPlayer;
 import com.jacoblucas.hanabi.player.AlwaysPlayPlayer;
 import com.jacoblucas.hanabi.player.Player;
@@ -39,6 +40,7 @@ public class Game {
     @Setter(AccessLevel.PROTECTED) private Queue<Fuse> fuses;
     @Setter(AccessLevel.PROTECTED) private Deck deck;
     private Map<Suit, Stack<Card>> fireworks;
+    @Builder.Default
     private boolean playersHaveWon = false;
 
     // Initialises player hands and the fireworks, Deals out the initial cards to the players
@@ -93,10 +95,26 @@ public class Game {
 
         return score;
     }
+    
+    Action getValidAction(Player player) {
+    	int actionAttemps = 3;
+    	Action action = null;
+    	while(actionAttemps > 0) {
+    		action = player.takeAction(fireworks, getOtherPlayerHands(player), tips.size(), fuses.size());
+            if(action.getActionType() == ActionType.TIP && tips.isEmpty()) {
+                actionAttemps--;
+            } else {
+            	return action;
+            }
+    	}
+    	System.out.println("Player " + player.getName() + " attempted 3 times to give a tip, when no tips where available.");
+    	System.exit(1);
+    	return action;
+    }
 
     Action signalPlayerAction(Player player) {
-        Action action = player.takeAction(fireworks, getOtherPlayerHands(player), tips.size(), fuses.size());
-
+    	Action action = getValidAction(player);
+        
         switch (action.getActionType()) {
             case DISCARD:
                 // discard the card
@@ -141,8 +159,6 @@ public class Game {
                 break;
 
             case TIP:
-                // TODO: handle case when player tips and there aren't any available tips in the game
-
                 // take off a tip
                 tips.poll();
 
@@ -157,6 +173,9 @@ public class Game {
                 }
 
                 System.out.println(player.getName() + " gave a tip to Player '" + receivingPlayer.getName() + "' : Cards at " + tip.getImpactedCardIndices() + " are " + (tip.getType() == TipType.NUMBER ? tip.getTipNumber() : tip.getTipSuit()));
+                if(tips.isEmpty()) {
+                	System.out.println("Carefull now! No Tips remaining!");
+                }
                 break;
         }
 
