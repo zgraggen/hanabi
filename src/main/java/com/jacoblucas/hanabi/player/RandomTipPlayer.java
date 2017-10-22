@@ -4,6 +4,7 @@ import com.jacoblucas.hanabi.action.Action;
 import com.jacoblucas.hanabi.action.TipAction;
 import com.jacoblucas.hanabi.action.TipType;
 import com.jacoblucas.hanabi.model.Card;
+import com.jacoblucas.hanabi.model.PlayerWithHand;
 import com.jacoblucas.hanabi.model.Suit;
 
 import java.util.ArrayList;
@@ -18,9 +19,9 @@ public class RandomTipPlayer extends Player {
     }
 
     @Override
-    public Action takeAction(Map<Suit, Stack<Card>> fireworks, Map<Player, List<Card>> playerHands, int remainingTips, int remainingFuses) {
-        Player p = playerHands.keySet().iterator().next();
-        List<Card> hand = playerHands.get(p);
+    public Action takeAction(Map<Suit, Stack<Card>> fireworks, List<PlayerWithHand> playerHands, int remainingTips, int remainingFuses) {
+        Player p = playerHands.get(0).getPlayer();
+        List<Card> hand = playerHands.get(0).getCards();
         int randomIndex = ThreadLocalRandom.current().nextInt(0, hand.size());
         Card card = hand.get(randomIndex);
 

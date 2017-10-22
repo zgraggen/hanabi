@@ -15,6 +15,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class GameTest {
 
     @Before
     public void setUp() {
-        Queue<Player> players = new LinkedList<>();
+        List<Player> players = new ArrayList<>();
         Queue<Tip> tips = new LinkedList<>();
         Queue<Fuse> fuses = new LinkedList<>();
         Map<Suit, Stack<Card>> fireworks = new HashMap<>();
