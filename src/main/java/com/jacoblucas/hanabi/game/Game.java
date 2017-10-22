@@ -8,10 +8,8 @@ import com.jacoblucas.hanabi.model.Suit;
 import com.jacoblucas.hanabi.model.Tip;
 import com.jacoblucas.hanabi.action.Action;
 import com.jacoblucas.hanabi.action.ActionType;
-import com.jacoblucas.hanabi.player.AlwaysDiscardPlayer;
-import com.jacoblucas.hanabi.player.AlwaysPlayPlayer;
+import com.jacoblucas.hanabi.player.Suggest1and2Player;
 import com.jacoblucas.hanabi.player.Player;
-import com.jacoblucas.hanabi.player.RandomTipPlayer;
 import com.jacoblucas.hanabi.action.TipAction;
 import com.jacoblucas.hanabi.action.TipType;
 import lombok.AccessLevel;
@@ -124,6 +122,7 @@ public class Game {
 
                 // give a replacement card for the card that was discarded
                 Card newCard = deck.deal();
+                player.cardHasBeenUsed(action.getImpactedCardIndices().get(0));
                 playerHands.get(player).add(newCard);
 
                 // replace a tip
@@ -156,6 +155,7 @@ public class Game {
 
                 // give a replacement card for the card that was played
                 newCard = deck.deal();
+                player.cardHasBeenUsed(action.getImpactedCardIndices().get(0));
                 playerHands.get(player).add(newCard);
 
                 break;
@@ -260,12 +260,19 @@ public class Game {
         Map<Player, List<Card>> playerHands = new HashMap<>();
 
         // TODO: read in num players from command line
-        Player discarder = new AlwaysDiscardPlayer("Discarder");
-        Player player = new AlwaysPlayPlayer("Player");
-        Player tipper = new RandomTipPlayer("Tipper");
-        players.add(discarder);
-        players.add(player);
-        players.add(tipper);
+//        Player discarder = new AlwaysDiscardPlayer("Discarder");
+//        Player player = new AlwaysPlayPlayer("Player");
+//        Player tipper = new RandomTipPlayer("Tipper");
+//        players.add(discarder);
+//        players.add(player);
+//        players.add(tipper);
+        
+      Player b1 = new Suggest1and2Player("bot 1");
+      Player b2 = new Suggest1and2Player("bot 2");
+      Player b3 = new Suggest1and2Player("bot 3");
+      players.add(b1);
+      players.add(b2);
+      players.add(b3);
 
         for (int i=0; i<8; i++) {
             tips.add(new Tip());

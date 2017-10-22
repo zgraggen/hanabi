@@ -38,6 +38,15 @@ public abstract class Player {
             knownSuits.add(i, suit);
         }
     }
+    
+    public void cardHasBeenUsed(int indices) {
+    	for(int i=indices; i < knownNumbers.size()-1; i++) {
+    		knownNumbers.set(i, knownNumbers.get(i+1));
+    		knownSuits.set(i, knownSuits.get(i+1));
+    	}
+		knownNumbers.set(4, null);
+		knownSuits.set(4, null);
+    }
 
     /**
      * Method for all implementations of Player to override.
