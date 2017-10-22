@@ -3,6 +3,7 @@ package com.jacoblucas.hanabi.game;
 import com.jacoblucas.hanabi.model.Card;
 import com.jacoblucas.hanabi.model.Deck;
 import com.jacoblucas.hanabi.model.Fuse;
+import com.jacoblucas.hanabi.model.PlayerWithHand;
 import com.jacoblucas.hanabi.model.Suit;
 import com.jacoblucas.hanabi.model.Tip;
 import com.jacoblucas.hanabi.action.Action;
@@ -34,7 +35,8 @@ import java.util.Stack;
 public class Game {
     protected static int NUM_TIPS = 8;
 
-    private Queue<Player> players;
+    @Builder.Default @Setter(AccessLevel.PRIVATE) private int play = 0;
+    private List<Player> players;
     @Getter(AccessLevel.PROTECTED) private Map<Player, List<Card>> playerHands;
     private Queue<Tip> tips;
     @Setter(AccessLevel.PROTECTED) private Queue<Fuse> fuses;
@@ -62,9 +64,9 @@ public class Game {
     // Runs the main loop of the game
     private void run() {
         while (!gameOver()) {
-            Player player = players.poll();
+            Player player = players.get(play%players.size());
             signalPlayerAction(player);
-            players.add(player);
+            play++;
         }
 
         score();
@@ -200,12 +202,11 @@ public class Game {
     }
 
     // TODO: sort this by player turn, add a turn position into the player class?
-    private Map<Player, List<Card>> getOtherPlayerHands(Player player) {
-        Map<Player, List<Card>> others = new HashMap<>();
-        for (Player p : playerHands.keySet()) {
-            if (p != player) {
-                others.put(p, playerHands.get(p));
-            }
+    private List<PlayerWithHand> getOtherPlayerHands(Player player) {
+        List<PlayerWithHand> others = new ArrayList<>();
+        for(int i=play+1; i < play + players.size(); i++) {
+        	Player p = players.get(i%players.size());
+        	others.add(new PlayerWithHand(p, playerHands.get(p)));
         }
         return others;
     }
@@ -252,7 +253,7 @@ public class Game {
     }
 
     public static void main(String[] args) {
-        Queue<Player> players = new LinkedList<>();
+        List<Player> players = new ArrayList<>();
         Queue<Tip> tips = new LinkedList<>();
         Queue<Fuse> fuses = new LinkedList<>();
         Map<Suit, Stack<Card>> fireworks = new HashMap<>();
